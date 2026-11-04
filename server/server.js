@@ -14,6 +14,7 @@ app.get("/api/health",(req,res)=>res.json({
   fallback:"gemini"
 }));
 app.use("/api",answerRoutes);
+app.use("/",answerRoutes);
 app.use((err,req,res,next)=>{console.error("Request failed:",err.message);res.status(err.status||500).json({error:err.status?err.message:"Internal server error"});});
 const host=process.env.HOST||"127.0.0.1",port=Number(process.env.PORT||3030);
 if(host!=="127.0.0.1"&&host!=="localhost")throw new Error("For safety, HOST must be localhost or 127.0.0.1.");
