@@ -11,7 +11,7 @@
     <div class="brand-mark">AQ</div>
     <div>
       <h1>AutoQuiz AI</h1>
-      <p>Moodle quiz assistant</p>
+      <p>Moodle quiz assistant & auto-solver</p>
     </div>
     <span id="status" class="pill">Checking</span>
   </header>
@@ -20,19 +20,27 @@
       <h2>Quiz overview</h2>
       <div class="stats">
         <div><strong id="total">0</strong><span>Detected</span></div>
-        <div><strong id="answered">0</strong><span>Applied</span></div>
-        <div><strong id="review">0</strong><span>Needs review</span></div>
+        <div><strong id="answered">0</strong><span>Solved</span></div>
+        <div><strong id="dbCount">0</strong><span>In DB</span></div>
       </div>
       <div class="progress"><i id="progressBar"></i></div>
       <p id="progressText">Scan a Moodle quiz page to begin.</p>
     </section>
 
-    <section class="actions">
+    <!-- Main Auto-Solve Action -->
+    <div style="margin-top:10px;">
+      <button id="autoSolveBtn" class="primary" style="width:100%; background:#7c3aed; border-color:#7c3aed; padding:12px; font-size:14px; font-weight:700; border-radius:9px; box-shadow:0 2px 8px rgba(124,58,237,0.3); display:flex; align-items:center; justify-content:center; gap:6px;">
+        ⚡ Auto-Solve Entire Quiz
+      </button>
+    </div>
+
+    <section class="actions" style="margin-top:10px;">
       <button id="scan" class="primary">Scan Moodle page</button>
       <button id="suggest">Get suggestions</button>
       <button id="applyAll" style="background:#16a34a; color:white; border-color:#16a34a;">Apply all</button>
-      <button id="reviewBtn">Review view</button>
+      <button id="harvestBtn" style="background:#059669; color:white; border-color:#059669;">Auto-Learn Review</button>
       <button id="databaseBtn">Answer bank</button>
+      <button id="reviewBtn">Review view</button>
       <button id="settingsBtn">Settings</button>
     </section>
 
@@ -40,9 +48,10 @@
 
     <section id="questionsSection" style="margin-top:14px; display:none;">
       <h3 style="font-size:13px; margin:0 0 8px 0; color:#334155;">Detected Questions</h3>
-      <div id="questionsList" style="display:flex; flex-direction:column; gap:10px; max-height:280px; overflow-y:auto; padding-right:2px;"></div>
+      <div id="questionsList" style="display:flex; flex-direction:column; gap:10px; max-height:260px; overflow-y:auto; padding-right:2px;"></div>
     </section>
   </main>
+  <script src="../database/localDatabase.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

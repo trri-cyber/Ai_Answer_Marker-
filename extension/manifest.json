@@ -36,6 +36,7 @@
         "content/progressTracker.js",
         "content/answerApplier.js",
         "content/navigationDetector.js",
+        "content/reviewHarvester.js",
         "content/content.js"
       ],
       "run_at": "document_idle"

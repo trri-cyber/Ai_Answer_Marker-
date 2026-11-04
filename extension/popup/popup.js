@@ -38,10 +38,19 @@ function renderQuestions(questions) {
         )
         .join("");
 
+      const isApplied = q.state === "applied";
+
       return `
       <div class="card" style="padding:10px 12px; border:1px solid #e2e8f0; border-radius:8px; background:#ffffff;">
-        <div style="font-weight:600; font-size:13px; color:#0f172a; margin-bottom:4px;">
-          Q${q.number || ""}. ${escapeHtml(q.text || q.question || "")}
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:4px;">
+          <div style="font-weight:600; font-size:13px; color:#0f172a; margin-bottom:4px;">
+            Q${q.number || ""}. ${escapeHtml(q.text || q.question || "")}
+          </div>
+          ${
+            isApplied
+              ? `<span style="background:#dcfce7; color:#166534; font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px; text-transform:uppercase;">Solved</span>`
+              : ""
+          }
         </div>
         <div style="font-size:11px; color:#64748b; margin-bottom:6px; text-transform:uppercase;">
           ${(q.type || "mcq").replace(/_/g, " ")} (${(q.options || []).length} options)
@@ -56,14 +65,19 @@ function renderQuestions(questions) {
             </div>
             ${q.explanation ? `<div style="font-size:11px; color:#475569; margin-top:2px;">${escapeHtml(q.explanation)}</div>` : ""}
             <button class="apply-single" data-id="${q.id}" data-answer="${escapeHtml(q.suggestion)}" style="margin-top:6px; background:#16a34a; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:600;">
-              ✓ Apply Answer
+              ✓ ${isApplied ? "Re-Apply Answer" : "Apply Answer"}
             </button>
           </div>
         `
             : `
-          <button class="suggest-single" data-id="${q.id}" style="margin-top:4px; background:#0284c7; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:500;">
-            💡 Get Suggestion
-          </button>
+          <div style="display:flex; gap:6px; margin-top:4px;">
+            <button class="solve-single" data-id="${q.id}" style="background:#7c3aed; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:600;">
+              ⚡ Auto-Solve
+            </button>
+            <button class="suggest-single" data-id="${q.id}" style="background:#0284c7; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:500;">
+              💡 Suggest
+            </button>
+          </div>
         `
         }
       </div>
@@ -90,6 +104,22 @@ function renderQuestions(questions) {
     };
   });
 
+  list.querySelectorAll(".solve-single").forEach(btn => {
+    btn.onclick = async () => {
+      const qid = btn.getAttribute("data-id");
+      btn.disabled = true;
+      btn.textContent = "Solving...";
+      try {
+        await send("AQ_AUTO_SOLVE");
+        await refresh();
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = "Failed";
+        $("message").textContent = err.message;
+      }
+    };
+  });
+
   list.querySelectorAll(".suggest-single").forEach(btn => {
     btn.onclick = async () => {
       btn.disabled = true;
@@ -108,21 +138,32 @@ function renderQuestions(questions) {
 
 async function refresh() {
   try {
+    // Update local database count
+    if (typeof AutoQuizDB !== "undefined") {
+      const dbAll = await AutoQuizDB.all();
+      $("dbCount").textContent = String(dbAll.length);
+    }
+
     const tab = await activeTab();
     const result = await chrome.tabs.sendMessage(tab.id, { action: "AQ_GET_PROGRESS" });
-    $("status").textContent = result?.isMoodle ? "Moodle detected" : "Not detected";
+    if (result?.isReview) {
+      $("status").textContent = "Review page (Learned)";
+      $("status").style.background = "#059669";
+    } else {
+      $("status").textContent = result?.isMoodle ? "Moodle detected" : "Not detected";
+      $("status").style.background = "";
+    }
+
     const p = result?.progress || {};
     $("total").textContent = p.total || 0;
     $("answered").textContent = p.applied || 0;
-    $("review").textContent = p.needsReview || 0;
     const pct = p.total ? Math.round((p.applied / p.total) * 100) : 0;
     $("progressBar").style.width = pct + "%";
     $("progressText").textContent = p.total
-      ? `${pct}% applied · ${p.unanswered || 0} unanswered`
+      ? `${pct}% solved · ${p.unanswered || 0} unanswered`
       : "Scan a Moodle quiz page to begin.";
 
-    // Fetch and render question list
-    if (result?.isMoodle) {
+    if (result?.isMoodle && !result?.isReview) {
       const qRes = await chrome.tabs.sendMessage(tab.id, { action: "AQ_GET_QUESTIONS" });
       if (qRes?.questions) {
         renderQuestions(qRes.questions);
@@ -132,6 +173,23 @@ async function refresh() {
     $("status").textContent = "Open Moodle";
   }
 }
+
+// Auto-Solve Entire Quiz
+$("autoSolveBtn").addEventListener("click", async () => {
+  try {
+    $("autoSolveBtn").disabled = true;
+    $("autoSolveBtn").textContent = "⚡ Auto-Solving Quiz...";
+    $("message").textContent = "Running Auto-Solve across all questions...";
+    const res = await send("AQ_AUTO_SOLVE");
+    $("message").textContent = res.message || `Solved ${res.solvedCount || 0} questions!`;
+    $("autoSolveBtn").textContent = `✓ Auto-Solved (${res.solvedCount || 0})`;
+    await refresh();
+  } catch (e) {
+    $("autoSolveBtn").disabled = false;
+    $("autoSolveBtn").textContent = "⚡ Auto-Solve Entire Quiz";
+    $("message").textContent = `Auto-solve failed: ${e.message}`;
+  }
+});
 
 $("scan").addEventListener("click", async () => {
   try {
@@ -162,6 +220,17 @@ $("applyAll").addEventListener("click", async () => {
     $("message").textContent = "Applying all available suggestions...";
     const r = await send("AQ_APPLY_ALL");
     $("message").textContent = `Applied ${r.appliedCount || 0} answer(s).`;
+    await refresh();
+  } catch (e) {
+    $("message").textContent = e.message;
+  }
+});
+
+$("harvestBtn").addEventListener("click", async () => {
+  try {
+    $("message").textContent = "Scanning review page for confirmed correct answers...";
+    const r = await send("AQ_HARVEST_REVIEW");
+    $("message").textContent = `Auto-learned & saved ${r.learnedCount || 0} confirmed answer(s) into database!`;
     await refresh();
   } catch (e) {
     $("message").textContent = e.message;
