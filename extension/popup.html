@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AutoQuiz AI</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>AutoQuiz AI</h1>
+      <span id="connection" class="badge">Checking…</span>
+    </header>
+    <p class="muted">Moodle question assistant</p>
+    <button id="scan">Scan this page</button>
+    <div id="status" role="status">Ready.</div>
+    <section>
+      <div class="row"><strong>Questions detected</strong><span id="count">0</span></div>
+      <div id="questions"></div>
+    </section>
+    <footer>Review suggested answers before applying them. Submit your Moodle attempt yourself.</footer>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>

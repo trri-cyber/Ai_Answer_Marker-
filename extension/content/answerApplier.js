@@ -1,0 +1,7 @@
+(function(g){
+ function apply(questionEl,answer){const text=String(answer??"").trim();if(!text)throw new Error("No answer to apply.");const radios=[...questionEl.querySelectorAll('input[type="radio"]')];const checks=[...questionEl.querySelectorAll('input[type="checkbox"]')];const labels=[...questionEl.querySelectorAll("label")];if(radios.length||checks.length){const wanted=Array.isArray(answer)?answer.map(String):[text];let matched=0;for(const label of labels){const input=label.querySelector("input")|| (label.htmlFor?questionEl.querySelector(`#${CSS.escape(label.htmlFor)}`):null);if(!input)continue;const labelText=label.innerText.trim();const should=wanted.some(w=>w.toLowerCase()===labelText.toLowerCase());if(should){input.checked=true;input.dispatchEvent(new Event("input",{bubbles:true}));input.dispatchEvent(new Event("change",{bubbles:true}));matched++;}}if(!matched)throw new Error("Could not match the suggested answer to an available option.");return{applied:true,matched};}
+ const field=questionEl.querySelector("textarea, input[type='text'], input[type='number']");if(field){if(field.value.trim()&&!confirm("This question already has an answer. Replace it?"))return{applied:false,cancelled:true};field.value=text;field.dispatchEvent(new Event("input",{bubbles:true}));field.dispatchEvent(new Event("change",{bubbles:true}));return{applied:true,matched:1};}
+ throw new Error("This question type is not supported for direct application.");
+ }
+ g.AutoQuizAnswerApplier={apply};
+})(globalThis);

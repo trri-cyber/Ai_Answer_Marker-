@@ -1,0 +1,1 @@
+(function(g){g.AutoQuizNavigation={detect(){return [...document.querySelectorAll('input[type="submit"],button,a')].filter(e=>/next|previous|finish|submit all/i.test((e.innerText||e.value||"").trim())).map(e=>({label:(e.innerText||e.value||"").trim(),disabled:!!e.disabled}));}}})(globalThis);

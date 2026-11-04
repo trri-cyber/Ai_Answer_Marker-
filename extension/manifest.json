@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "AutoQuiz AI",
+  "version": "1.0.0",
+  "description": "Moodle quiz question assistant with local answer lookup and AI suggestions.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "tabs"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:3030/*",
+    "http://localhost:3030/*",
+    "https://*/*",
+    "http://*/*"
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "AutoQuiz AI"
+  },
+  "background": {
+    "service_worker": "background/serviceWorker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "database/localDatabase.js",
+        "database/answerMatcher.js",
+        "content/moodleDetector.js",
+        "content/questionClassifier.js",
+        "content/questionExtractor.js",
+        "content/progressTracker.js",
+        "content/answerApplier.js",
+        "content/navigationDetector.js",
+        "content/content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

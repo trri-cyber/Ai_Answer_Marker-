@@ -1,0 +1,4 @@
+(function(g){
+ function classify(el){const c=el.className||"";if(c.includes("multichoice")){const inputs=el.querySelectorAll('input[type="checkbox"]');return inputs.length?"multiple_select":"multiple_choice"}if(c.includes("truefalse"))return"true_false";if(c.includes("shortanswer"))return"short_answer";if(c.includes("numerical"))return"numerical";if(c.includes("essay"))return"essay";if(c.includes("matching"))return"matching";if(el.querySelector("select"))return"select_missing_words";if(el.querySelector('input[type="radio"]'))return"multiple_choice";if(el.querySelector('input[type="checkbox"]'))return"multiple_select";if(el.querySelector("textarea"))return"essay";if(el.querySelector('input[type="text"],input[type="number"]'))return"short_answer";return"description_or_unknown";}
+ g.AutoQuizClassifier={classify};
+})(globalThis);

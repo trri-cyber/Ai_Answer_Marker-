@@ -1,0 +1,9 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="popup.css"><title>AutoQuiz AI</title></head>
+<body>
+<header><div class="brand-mark">AQ</div><div><h1>AutoQuiz AI</h1><p>Moodle quiz assistant</p></div><span id="status" class="pill">Checking</span></header>
+<main>
+<section class="card"><h2>Quiz overview</h2><div class="stats"><div><strong id="total">0</strong><span>Detected</span></div><div><strong id="answered">0</strong><span>Applied</span></div><div><strong id="review">0</strong><span>Needs review</span></div></div><div class="progress"><i id="progressBar"></i></div><p id="progressText">Scan a Moodle quiz page to begin.</p></section>
+<section class="actions"><button id="scan" class="primary">Scan Moodle page</button><button id="suggest">Get suggestions</button><button id="reviewBtn">Review questions</button><button id="databaseBtn">Open answer database</button><button id="settingsBtn">Settings</button></section>
+<p id="message" role="status"></p>
+</main><script src="popup.js"></script></body></html>
