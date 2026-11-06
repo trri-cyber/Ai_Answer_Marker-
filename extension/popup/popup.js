@@ -174,15 +174,19 @@ async function refresh() {
   }
 }
 
-// Auto-Solve Entire Quiz
+// Auto-Solve Entire Quiz (fire-and-forget — runs across page loads via storage flag)
 $("autoSolveBtn").addEventListener("click", async () => {
   try {
     $("autoSolveBtn").disabled = true;
     $("autoSolveBtn").textContent = "⚡ Auto-Solving Quiz...";
-    $("message").textContent = "Running Auto-Solve across all questions...";
-    const res = await send("AQ_AUTO_SOLVE");
-    $("message").textContent = res.message || `Solved ${res.solvedCount || 0} questions!`;
-    $("autoSolveBtn").textContent = `✓ Auto-Solved (${res.solvedCount || 0})`;
+    $("message").textContent = "Auto-Solve started — watch the floating toolbar on the page. It will navigate automatically until the quiz is finished.";
+    // Fire-and-forget: content script drives itself across page loads
+    send("AQ_AUTO_SOLVE").catch(() => {});
+    // Re-enable button after a moment so user can still stop if needed
+    setTimeout(() => {
+      $("autoSolveBtn").disabled = false;
+      $("autoSolveBtn").textContent = "⚡ Auto-Solve Entire Quiz";
+    }, 3000);
     await refresh();
   } catch (e) {
     $("autoSolveBtn").disabled = false;
