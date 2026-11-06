@@ -101,12 +101,27 @@
 
         if (matchedCandidate) {
           const { input, labelEl } = matchedCandidate;
-          input.checked = true;
-          input.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
-          input.dispatchEvent(new Event("input", { bubbles: true }));
-          input.dispatchEvent(new Event("change", { bubbles: true }));
-          if (labelEl) {
-            labelEl.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+
+          if (input.type === "checkbox") {
+            // For checkboxes: only click if not already checked (click toggles)
+            if (!input.checked) {
+              input.click();
+            }
+            // Ensure checked state and fire events regardless
+            if (!input.checked) {
+              input.checked = true;
+            }
+            input.dispatchEvent(new Event("input", { bubbles: true }));
+            input.dispatchEvent(new Event("change", { bubbles: true }));
+          } else {
+            // For radio buttons: set checked then fire events
+            input.checked = true;
+            input.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+            input.dispatchEvent(new Event("input", { bubbles: true }));
+            input.dispatchEvent(new Event("change", { bubbles: true }));
+            if (labelEl) {
+              labelEl.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+            }
           }
           matchedCount++;
         }

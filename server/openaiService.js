@@ -22,15 +22,27 @@ const systemPrompt = [
 ].join(" ");
 
 function formatUserPrompt(input) {
+  const isMultiSelect = (input.questionType || "").includes("multiple_select") ||
+                        (input.questionType || "").includes("checkbox");
   const parts = [`Question: ${input.question}`, `Type: ${input.questionType || "unknown"}`];
   if (Array.isArray(input.options) && input.options.length > 0) {
     parts.push("Options:");
     input.options.forEach((opt) => {
       parts.push(`- ${opt}`);
     });
-    parts.push(
-      "CRITICAL INSTRUCTION: You MUST choose your suggestedAnswer strictly from the provided options above. Return the exact matching option string in suggestedAnswer."
-    );
+    if (isMultiSelect) {
+      parts.push(
+        "CRITICAL INSTRUCTION: This is a MULTIPLE SELECT (checkbox) question — more than one answer may be correct.",
+        "You MUST list ALL correct options from the provided list above, separated by ' | ' (pipe character).",
+        "Example format: 'A. Option one | C. Option three'",
+        "Only include options that are actually correct. Do NOT include incorrect options.",
+        "Return your answer(s) in suggestedAnswer as a pipe-separated string."
+      );
+    } else {
+      parts.push(
+        "CRITICAL INSTRUCTION: You MUST choose your suggestedAnswer strictly from the provided options above. Return the exact matching option string in suggestedAnswer."
+      );
+    }
   }
   return parts.join("\n");
 }

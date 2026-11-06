@@ -106,6 +106,27 @@ describe("Moodle Question and Option Extractor", () => {
     const parisInput = window.document.getElementById("q2:1_answer1");
     expect(parisInput.checked).toBe(true);
   });
+
+  it("applies checkbox (multiple_select) answers without toggling them off", () => {
+    const window = createMoodleEnv();
+    const q3 = window.document.getElementById("q3");
+
+    // Apply two answers via pipe-separated string (as content.js would split it)
+    const answers = ["A. 2", "C. 5"];
+    const result = window.AutoQuizAnswerApplier.apply(q3, answers);
+    expect(result.applied).toBe(true);
+    expect(result.matched).toBe(2);
+
+    // Both checkboxes must be CHECKED (not toggled off)
+    const cb1 = window.document.getElementById("q3_c0");
+    const cb3 = window.document.getElementById("q3_c2");
+    expect(cb1.checked).toBe(true);
+    expect(cb3.checked).toBe(true);
+
+    // The un-selected option must stay unchecked
+    const cb2 = window.document.getElementById("q3_c1");
+    expect(cb2.checked).toBe(false);
+  });
 });
 
 describe("Moodle Review Auto-Learning Harvester", () => {

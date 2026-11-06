@@ -255,7 +255,16 @@
     const el = questionElements.get(q.id) || document.getElementById(q.id);
     if (!el) throw new Error("Question element not found on page.");
     if (!q.suggestion) throw new Error("No suggestion available.");
-    const res = AutoQuizAnswerApplier.apply(el, q.suggestion);
+
+    // For multiple_select (checkbox) questions: split pipe-separated answers into array
+    let answerToApply = q.suggestion;
+    if (q.type === "multiple_select" || q.questionType === "multiple_select") {
+      if (typeof q.suggestion === "string" && q.suggestion.includes("|")) {
+        answerToApply = q.suggestion.split("|").map(s => s.trim()).filter(Boolean);
+      }
+    }
+
+    const res = AutoQuizAnswerApplier.apply(el, answerToApply);
     q.state = "applied";
     AutoQuizProgress.mark(q.id, "applied");
     return res;
