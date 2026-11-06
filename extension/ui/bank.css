@@ -11,3 +11,4 @@ button:hover, .button:hover { background: #1d4ed8; }
 .row { display: flex; align-items: center; justify-content: space-between; }
 .record { border-top: 1px solid #e2e8f0; padding: 14px 0; }
 .muted { color: #64748b; font-size: 12px; margin-top: 4px; }
+
