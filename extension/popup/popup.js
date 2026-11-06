@@ -241,7 +241,7 @@ $("reviewBtn").addEventListener("click", () =>
   chrome.tabs.create({ url: chrome.runtime.getURL("ui/review.html") })
 );
 $("databaseBtn").addEventListener("click", () =>
-  chrome.tabs.create({ url: chrome.runtime.getURL("ui/dashboard.html") })
+  chrome.tabs.create({ url: chrome.runtime.getURL("ui/bank.html") })
 );
 $("settingsBtn").addEventListener("click", () =>
   chrome.tabs.create({ url: chrome.runtime.getURL("ui/settings.html") })

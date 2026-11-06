@@ -182,8 +182,13 @@
     if (main) main.prepend(banner);
 
     const btn = banner.querySelector("#aq-open-bank-btn");
-    if (btn && typeof chrome !== "undefined" && chrome.runtime?.getURL) {
-      btn.onclick = () => window.open(chrome.runtime.getURL("ui/dashboard.html"), "_blank");
+    if (btn) {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        if (typeof chrome !== "undefined" && chrome.runtime?.sendMessage) {
+          chrome.runtime.sendMessage({ action: "AQ_OPEN_PAGE", url: "ui/bank.html" });
+        }
+      };
     }
   }
 
@@ -198,3 +203,4 @@
 
   g.AutoQuizHarvester = { extractCorrectAnswer, harvestAll };
 })(typeof globalThis !== "undefined" ? globalThis : this);
+

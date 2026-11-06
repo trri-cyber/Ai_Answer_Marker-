@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="bank.css">
+  <title>AutoQuiz AI · Answer Bank</title>
+</head>
+<body>
+  <main>
+    <h1>AutoQuiz AI · Verified Answer Bank</h1>
+    <p>Manage locally stored verified quiz answers. Entries are automatically used as instant 100% matches during quizzes.</p>
+
+    <section class="panel">
+      <h2>Add Verified Answer</h2>
+      <input id="question" placeholder="Question text">
+      <select id="type">
+        <option value="multiple_choice">Multiple choice</option>
+        <option value="true_false">True / False</option>
+        <option value="short_answer">Short answer</option>
+        <option value="numerical">Numerical</option>
+        <option value="unknown">Other / Unknown</option>
+      </select>
+      <textarea id="answer" placeholder="Exact verified answer"></textarea>
+      <textarea id="explanation" placeholder="Explanation (optional)"></textarea>
+      <label><input type="checkbox" id="verified" checked> Verified correct answer</label>
+      <button id="add">Save Answer to Bank</button>
+    </section>
+
+    <section class="panel">
+      <div class="row">
+        <h2>Saved Answers in Bank</h2>
+        <div style="display:flex; gap:8px;">
+          <button id="export">Export JSON</button>
+          <label class="button">Import JSON<input type="file" id="import" accept=".json,application/json" hidden></label>
+        </div>
+      </div>
+      <div id="records"></div>
+    </section>
+  </main>
+  <script src="../database/localDatabase.js"></script>
+  <script src="bank.js"></script>
+</body>
+</html>
